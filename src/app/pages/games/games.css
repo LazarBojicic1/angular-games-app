@@ -1,0 +1,4 @@
+.toolbar-card {
+  position: static;
+  backdrop-filter: blur(18px);
+}

@@ -1,0 +1,11 @@
+<section class="error-message">
+  <span>!</span>
+  <div>
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+  </div>
+
+  <button *ngIf="actionLabel" type="button" (click)="retry.emit()">
+    {{ actionLabel }}
+  </button>
+</section>

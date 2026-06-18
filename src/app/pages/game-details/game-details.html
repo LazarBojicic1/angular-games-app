@@ -1,0 +1,114 @@
+<main class="details-page">
+  <app-loading-spinner *ngIf="isLoading" label="Loading game details"></app-loading-spinner>
+
+  <app-error-message
+    *ngIf="!isLoading && hasError"
+    title="Details request failed"
+    [message]="errorMessage"
+    (retry)="retry()"
+  ></app-error-message>
+
+  <article *ngIf="!isLoading && !hasError && game" class="details-shell">
+    <section class="details-hero" [style.background-image]="'linear-gradient(90deg, rgba(8, 11, 16, 0.98), rgba(8, 11, 16, 0.66)), url(' + (game.background_image || '/images/hero-bg.avif') + ')'">
+      <a class="secondary-action" routerLink="/games">Back to catalog</a>
+
+      <div class="hero-content">
+        <p>{{ game.released || 'Release TBA' }}</p>
+        <h1>{{ game.name }}</h1>
+
+        <div class="hero-metrics">
+          <app-rating-badge [rating]="game.rating"></app-rating-badge>
+
+          <div>
+            <span>Metacritic</span>
+            <strong>{{ game.metacritic || 'N/A' }}</strong>
+          </div>
+
+          <div>
+            <span>Playtime</span>
+            <strong>{{ game.playtime || 0 }}h</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="details-grid">
+      <div class="main-column">
+        <section class="info-block">
+          <h2>Overview</h2>
+          <p>{{ game.description_raw || 'No description available for this title.' }}</p>
+        </section>
+
+        <section class="info-block" *ngIf="screenshots.length">
+          <h2>Screenshot gallery</h2>
+          <div class="screenshot-grid">
+            <img *ngFor="let screenshot of screenshots | slice: 0 : 6" [src]="screenshot.image" [alt]="game.name + ' screenshot'" loading="lazy" />
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-column">
+        <section class="info-block">
+          <h2>Game data</h2>
+
+          <dl>
+            <div>
+              <dt>Website</dt>
+              <dd>
+                <a *ngIf="game.website; else noWebsite" [href]="game.website" target="_blank" rel="noreferrer">
+                  Visit official site
+                </a>
+                <ng-template #noWebsite>N/A</ng-template>
+              </dd>
+            </div>
+
+            <div>
+              <dt>Release date</dt>
+              <dd>{{ game.released || 'TBA' }}</dd>
+            </div>
+
+            <div>
+              <dt>Playtime</dt>
+              <dd>{{ game.playtime || 0 }} hours</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="info-block">
+          <h2>Genres</h2>
+          <div class="chip-list">
+            <span *ngFor="let genre of game.genres">{{ genre.name }}</span>
+          </div>
+        </section>
+
+        <section class="info-block">
+          <h2>Platforms</h2>
+          <div class="chip-list">
+            <span *ngFor="let item of game.platforms">{{ item.platform.name }}</span>
+          </div>
+        </section>
+
+        <section class="info-block" *ngIf="game.developers.length">
+          <h2>Developers</h2>
+          <div class="chip-list">
+            <span *ngFor="let developer of game.developers">{{ developer.name }}</span>
+          </div>
+        </section>
+
+        <section class="info-block" *ngIf="game.publishers.length">
+          <h2>Publishers</h2>
+          <div class="chip-list">
+            <span *ngFor="let publisher of game.publishers">{{ publisher.name }}</span>
+          </div>
+        </section>
+
+        <section class="info-block" *ngIf="game.tags.length">
+          <h2>Tags</h2>
+          <div class="chip-list">
+            <span *ngFor="let tag of game.tags | slice: 0 : 14">{{ tag.name }}</span>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </article>
+</main>

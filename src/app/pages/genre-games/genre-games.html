@@ -1,0 +1,52 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Genre collection</p>
+    <h1>{{ genreName }}</h1>
+    <span>Games filtered by the selected genre, loaded directly from the catalog API.</span>
+  </header>
+
+  <a class="secondary-action back-link" routerLink="/genres">Back to genres</a>
+
+  <section class="toolbar-card" *ngIf="genreId">
+    <app-filter-panel
+      [genres]="[]"
+      [platforms]="platforms"
+      [showGenres]="false"
+      title="Filter this genre"
+      [resetKey]="genreId"
+      (filtersChange)="onFiltersChange($event)"
+    ></app-filter-panel>
+  </section>
+
+  <app-error-message
+    *ngIf="hasError"
+    title="Genre games request failed"
+    message="Games for this genre could not be loaded right now."
+    (retry)="retry()"
+  ></app-error-message>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading genre games"></app-loading-spinner>
+
+  <section *ngIf="!isLoading && !hasError">
+    <div class="content-meta" *ngIf="games.length">
+      <span><strong>{{ games.length }}</strong> games loaded</span>
+    </div>
+
+    <div class="games-grid" *ngIf="games.length; else emptyState">
+      <app-game-card *ngFor="let game of games" [game]="game"></app-game-card>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h2>No games found</h2>
+        <p>This genre does not have visible catalog results right now.</p>
+      </div>
+    </ng-template>
+
+    <div class="load-more-row" *ngIf="nextPageUrl && games.length">
+      <button class="primary-action" type="button" [disabled]="isLoadingMore" (click)="loadMore()">
+        {{ isLoadingMore ? 'Loading...' : 'Load more' }}
+      </button>
+    </div>
+  </section>
+</main>

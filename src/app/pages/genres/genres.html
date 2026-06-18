@@ -1,0 +1,28 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Genres</p>
+    <h1>Browse the catalog by play style.</h1>
+    <span>Jump into action, strategy, RPG, racing and every other category with direct routes into matching games.</span>
+  </header>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading genres"></app-loading-spinner>
+
+  <app-error-message
+    *ngIf="!isLoading && hasError"
+    title="Genres request failed"
+    message="Genre data could not be loaded right now."
+    (retry)="loadGenres()"
+  ></app-error-message>
+
+  <section class="genre-grid" *ngIf="!isLoading && !hasError">
+    <article class="genre-card" *ngFor="let genre of genres">
+      <img [src]="genre.image_background" [alt]="genre.name" loading="lazy" />
+
+      <div>
+        <span>{{ genre.games_count | number }} games</span>
+        <h2>{{ genre.name }}</h2>
+        <a [routerLink]="['/genres', genre.id]">View games</a>
+      </div>
+    </article>
+  </section>
+</main>

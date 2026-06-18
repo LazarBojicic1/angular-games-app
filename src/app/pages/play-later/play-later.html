@@ -1,0 +1,30 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Library</p>
+    <h1>Play later</h1>
+    <span>A focused queue for the games you want to return to when the timing is right.</span>
+  </header>
+
+  <section *ngIf="playLaterGames.length; else emptyState">
+    <div class="content-meta">
+      <span><strong>{{ playLaterGames.length }}</strong> queued games</span>
+      <a class="secondary-action" routerLink="/games">Browse catalog</a>
+    </div>
+
+    <div class="games-grid">
+      <app-game-card
+        *ngFor="let game of playLaterGames"
+        [game]="game"
+        (libraryChange)="refreshPlayLater()"
+      ></app-game-card>
+    </div>
+  </section>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <h2>Your queue is empty</h2>
+      <p>Add games from the catalog when they look worth your next session.</p>
+      <a class="primary-action" routerLink="/games">Browse games</a>
+    </div>
+  </ng-template>
+</main>

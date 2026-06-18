@@ -1,0 +1,51 @@
+<header class="navbar-shell">
+  <nav class="navbar">
+    <a class="logo" routerLink="/" (click)="closeMenu()">
+      <span class="logo-mark">GV</span>
+      <span class="logo-text">GameVault</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      (click)="toggleMenu()"
+      [class.open]="isMenuOpen"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-label="Toggle navigation"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links" [class.open]="isMenuOpen">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">
+        Overview
+      </a>
+
+      <a routerLink="/games" routerLinkActive="active" (click)="closeMenu()">
+        Games
+      </a>
+
+      <a routerLink="/genres" routerLinkActive="active" (click)="closeMenu()">
+        Genres
+      </a>
+
+      <a routerLink="/platforms" routerLinkActive="active" (click)="closeMenu()">
+        Platforms
+      </a>
+
+      <a routerLink="/favorites" routerLinkActive="active" (click)="closeMenu()">
+        Favorites
+      </a>
+
+      <a routerLink="/play-later" routerLinkActive="active" (click)="closeMenu()">
+        Play later
+      </a>
+
+      <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">
+        About
+      </a>
+    </div>
+  </nav>
+</header>

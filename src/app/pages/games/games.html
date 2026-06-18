@@ -1,0 +1,56 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Catalog</p>
+    <h1>Discover games with the context that matters.</h1>
+    <span>
+      Search, filter and compare titles across genres, platforms, ratings and release windows.
+      Save anything worth revisiting to your personal library.
+    </span>
+  </header>
+
+  <section class="toolbar-card">
+    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    <app-filter-panel
+      [genres]="genres"
+      [platforms]="platforms"
+      title="Filter catalog"
+      (filtersChange)="onFiltersChange($event)"
+    ></app-filter-panel>
+  </section>
+
+  <app-error-message
+    *ngIf="hasError"
+    title="Catalog request failed"
+    [message]="errorMessage"
+    (retry)="retry()"
+  ></app-error-message>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading games"></app-loading-spinner>
+
+  <section *ngIf="!isLoading && !hasError">
+    <div class="content-meta" *ngIf="games.length">
+      <span><strong>{{ games.length }}</strong> games loaded</span>
+      <span *ngIf="nextPageUrl">More titles available</span>
+    </div>
+
+    <div class="games-grid" *ngIf="games.length; else emptyState">
+      <app-game-card
+        *ngFor="let game of games; trackBy: trackByGameId"
+        [game]="game"
+      ></app-game-card>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h2>No games found</h2>
+        <p>Adjust your search or filters and try again.</p>
+      </div>
+    </ng-template>
+
+    <div class="load-more-row" *ngIf="nextPageUrl && games.length">
+      <button class="primary-action" type="button" [disabled]="isLoadingMore" (click)="loadMore()">
+        {{ isLoadingMore ? 'Loading...' : 'Load more' }}
+      </button>
+    </div>
+  </section>
+</main>

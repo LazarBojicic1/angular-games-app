@@ -1,0 +1,30 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Library</p>
+    <h1>Favorites</h1>
+    <span>Your strongest picks, saved locally for quick return.</span>
+  </header>
+
+  <section *ngIf="favorites.length; else emptyState">
+    <div class="content-meta">
+      <span><strong>{{ favorites.length }}</strong> favorite games</span>
+      <a class="secondary-action" routerLink="/games">Browse catalog</a>
+    </div>
+
+    <div class="games-grid">
+      <app-game-card
+        *ngFor="let game of favorites"
+        [game]="game"
+        (libraryChange)="refreshFavorites()"
+      ></app-game-card>
+    </div>
+  </section>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <h2>No favorites yet</h2>
+      <p>Explore the catalog and mark games you want to keep close.</p>
+      <a class="primary-action" routerLink="/games">Browse games</a>
+    </div>
+  </ng-template>
+</main>

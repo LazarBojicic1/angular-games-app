@@ -1,0 +1,10 @@
+<span
+  class="rating-badge"
+  [class.excellent]="tone === 'excellent'"
+  [class.good]="tone === 'good'"
+  [class.mixed]="tone === 'mixed'"
+  [class.neutral]="tone === 'neutral'"
+>
+  <strong>{{ displayRating }}</strong>
+  <small>{{ label }}</small>
+</span>

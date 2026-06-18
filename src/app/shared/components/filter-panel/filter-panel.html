@@ -1,0 +1,77 @@
+<section class="filter-panel" [class.single-mode]="!showGenres || !showPlatforms" aria-label="Game filters">
+  <div class="filter-head">
+    <div>
+      <p>{{ title }}</p>
+      <span>Checkbox filters, instant catalog refresh.</span>
+    </div>
+
+    <button class="reset-button" type="button" (click)="clearFilters()">Reset</button>
+  </div>
+
+  <div class="filter-content">
+    <div class="filter-group" *ngIf="showGenres">
+      <h3>Genres</h3>
+
+      <div class="checkbox-grid" *ngIf="genres.length; else noGenres">
+        <label class="check-card" *ngFor="let genre of genres">
+          <input
+            type="checkbox"
+            [checked]="isGenreSelected(genre.id)"
+            (change)="toggleGenre($event, genre.id)"
+          />
+          <span>{{ genre.name }}</span>
+        </label>
+      </div>
+
+      <ng-template #noGenres>
+        <p class="filter-note">Genre filters are loading.</p>
+      </ng-template>
+    </div>
+
+    <div class="filter-group" *ngIf="showPlatforms">
+      <h3>Platforms</h3>
+
+      <div class="checkbox-grid" *ngIf="platforms.length; else noPlatforms">
+        <label class="check-card" *ngFor="let platform of platforms">
+          <input
+            type="checkbox"
+            [checked]="isPlatformSelected(platform.id)"
+            (change)="togglePlatform($event, platform.id)"
+          />
+          <span>{{ platform.name }}</span>
+        </label>
+      </div>
+
+      <ng-template #noPlatforms>
+        <p class="filter-note">Platform filters are loading.</p>
+      </ng-template>
+    </div>
+
+    <div class="sort-field">
+      <span>Sort by</span>
+
+      <div class="sort-dropdown" [class.open]="isSortOpen">
+        <button
+          class="sort-trigger"
+          type="button"
+          (click)="toggleSortDropdown()"
+          [attr.aria-expanded]="isSortOpen"
+        >
+          <span>{{ selectedOrderingLabel }}</span>
+          <i aria-hidden="true"></i>
+        </button>
+
+        <div class="sort-menu" *ngIf="isSortOpen">
+          <button
+            type="button"
+            *ngFor="let option of sortOptions"
+            [class.active]="ordering === option.value"
+            (click)="selectOrdering(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

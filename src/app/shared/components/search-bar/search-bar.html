@@ -1,0 +1,16 @@
+<form class="search-bar" (ngSubmit)="submitSearch()">
+  <label for="game-search">Search games</label>
+
+  <div class="search-control">
+    <input
+      id="game-search"
+      type="search"
+      name="searchText"
+      [(ngModel)]="searchText"
+      placeholder="Search by title"
+    />
+
+    <button type="submit">Search</button>
+    <button class="ghost" type="button" (click)="clearSearch()">Clear</button>
+  </div>
+</form>

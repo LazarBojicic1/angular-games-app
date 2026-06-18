@@ -1,0 +1,40 @@
+<article class="game-card" [class.compact]="compact">
+  <div class="cover" [class.empty-cover]="!game.background_image">
+    <img *ngIf="game.background_image" [src]="game.background_image" [alt]="game.name" loading="lazy" />
+    <span *ngIf="!game.background_image">GV</span>
+  </div>
+
+  <div class="card-body">
+    <div class="card-top">
+      <div>
+        <p class="release">{{ game.released || 'Release TBA' }}</p>
+        <h3>{{ game.name }}</h3>
+      </div>
+
+      <app-rating-badge [rating]="game.rating"></app-rating-badge>
+    </div>
+
+    <div class="score-row">
+      <span>Metacritic</span>
+      <strong [class.score-empty]="!game.metacritic">{{ game.metacritic || 'N/A' }}</strong>
+    </div>
+
+    <div class="chips" *ngIf="game.genres.length">
+      <span *ngFor="let genre of game.genres | slice: 0 : 3">{{ genre.name }}</span>
+    </div>
+
+    <div class="platforms" *ngIf="game.platforms.length">
+      <span *ngFor="let item of game.platforms | slice: 0 : 4">{{ item.platform.name }}</span>
+    </div>
+
+    <div class="actions">
+      <a [routerLink]="['/games', game.id]">Details</a>
+      <button type="button" [class.active]="isFavorite" (click)="toggleFavorite()">
+        {{ isFavorite ? 'Favorited' : 'Favorite' }}
+      </button>
+      <button type="button" [class.active]="isPlayLater" (click)="togglePlayLater()">
+        {{ isPlayLater ? 'Queued' : 'Play later' }}
+      </button>
+    </div>
+  </div>
+</article>

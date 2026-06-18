@@ -1,0 +1,69 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p>Platforms</p>
+    <h1>Pick an ecosystem and browse its strongest catalog entries.</h1>
+    <span>Platform selection stays visible while the right side updates with games for the active platform.</span>
+  </header>
+
+  <app-error-message
+    *ngIf="hasError"
+    title="Platform request failed"
+    message="Platform data could not be loaded right now."
+    (retry)="retry()"
+  ></app-error-message>
+
+  <app-loading-spinner *ngIf="isLoadingPlatforms" label="Loading platforms"></app-loading-spinner>
+
+  <section class="platform-layout" *ngIf="!isLoadingPlatforms && !hasError">
+    <aside class="platform-list">
+      <button
+        type="button"
+        *ngFor="let platform of platforms"
+        [class.active]="selectedPlatform?.id === platform.id"
+        (click)="selectPlatform(platform)"
+      >
+        <span>{{ platform.name }}</span>
+        <small *ngIf="platform.games_count">{{ platform.games_count | number }} games</small>
+      </button>
+    </aside>
+
+    <section class="platform-games">
+      <div class="platform-heading" *ngIf="selectedPlatform">
+        <p>Selected platform</p>
+        <h2>{{ selectedPlatform.name }}</h2>
+      </div>
+
+      <section class="toolbar-card platform-filters" *ngIf="selectedPlatform">
+        <app-filter-panel
+          [genres]="genres"
+          [platforms]="[]"
+          [showPlatforms]="false"
+          title="Filter this platform"
+          [resetKey]="selectedPlatform.id"
+          (filtersChange)="onFiltersChange($event)"
+        ></app-filter-panel>
+      </section>
+
+      <app-loading-spinner *ngIf="isLoadingGames" label="Loading platform games"></app-loading-spinner>
+
+      <section *ngIf="!isLoadingGames">
+        <div class="games-grid" *ngIf="games.length; else emptyState">
+          <app-game-card *ngFor="let game of games" [game]="game" [compact]="true"></app-game-card>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <h2>No platform games found</h2>
+            <p>There are no visible results for this platform at the moment.</p>
+          </div>
+        </ng-template>
+
+        <div class="load-more-row" *ngIf="nextPageUrl && games.length">
+          <button class="primary-action" type="button" [disabled]="isLoadingMore" (click)="loadMore()">
+            {{ isLoadingMore ? 'Loading...' : 'Load more' }}
+          </button>
+        </div>
+      </section>
+    </section>
+  </section>
+</main>
