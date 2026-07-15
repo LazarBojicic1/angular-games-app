@@ -7,7 +7,7 @@
   <div class="card-body">
     <div class="card-top">
       <div>
-        <p class="release">{{ game.released || 'Release TBA' }}</p>
+        <p class="release">{{ game.released | releaseDate }}</p>
         <h3>{{ game.name }}</h3>
       </div>
 
@@ -29,12 +29,14 @@
 
     <div class="actions">
       <a [routerLink]="['/games', game.id]">Details</a>
-      <button type="button" [class.active]="isFavorite" (click)="toggleFavorite()">
-        {{ isFavorite ? 'Favorited' : 'Favorite' }}
+      <button type="button" [class.active]="isFavorite" [disabled]="isUpdatingFavorite" (click)="toggleFavorite()">
+        {{ isUpdatingFavorite ? 'Saving...' : (isFavorite ? 'Favorited' : 'Favorite') }}
       </button>
-      <button type="button" [class.active]="isPlayLater" (click)="togglePlayLater()">
-        {{ isPlayLater ? 'Queued' : 'Play later' }}
+      <button type="button" [class.active]="isPlayLater" [disabled]="isUpdatingPlayLater" (click)="togglePlayLater()">
+        {{ isUpdatingPlayLater ? 'Saving...' : (isPlayLater ? 'Queued' : 'Play later') }}
       </button>
     </div>
+
+    <p class="action-error" *ngIf="actionError" role="alert">{{ actionError }}</p>
   </div>
 </article>

@@ -1,0 +1,17 @@
+.crud-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.7fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.admin-toolbar > span {
+  color: var(--muted-light);
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  .crud-layout {
+    grid-template-columns: 1fr;
+  }
+}

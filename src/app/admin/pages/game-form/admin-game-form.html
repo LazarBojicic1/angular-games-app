@@ -1,0 +1,211 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Game catalog</p>
+      <h1>{{ pageTitle }}</h1>
+      <p>
+        {{
+          isEditMode
+            ? "Update the game's details, artwork, and availability."
+            : 'Add a new game to the GameVault catalog.'
+        }}
+      </p>
+    </div>
+    <a class="admin-button secondary" routerLink="/admin/games">Back to games</a>
+  </header>
+
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="admin-loading" *ngIf="isLoading">Loading game details...</div>
+
+  <section class="admin-form-panel" *ngIf="!isLoading">
+    <div class="admin-form-heading">
+      <div>
+        <h2>Game details</h2>
+        <p>Fields marked with * are required.</p>
+      </div>
+      <span class="admin-status">{{ isEditMode ? 'Editing' : 'New game' }}</span>
+    </div>
+
+    <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label for="game-name">Name *</label>
+          <input
+            id="game-name"
+            formControlName="name"
+            type="text"
+            maxlength="150"
+            (blur)="fillSlug()"
+          />
+          <app-admin-form-errors
+            [control]="field('name')"
+            label="Name"
+            [serverErrors]="serverErrorsFor('name')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-slug">URL slug *</label>
+          <input id="game-slug" formControlName="slug" type="text" maxlength="170" />
+          <app-admin-form-errors
+            [control]="field('slug')"
+            label="URL slug"
+            [serverErrors]="serverErrorsFor('slug')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field wide">
+          <label for="game-image">Background image URL</label>
+          <input id="game-image" formControlName="background_image" type="url" />
+          <app-admin-form-errors
+            [control]="field('background_image')"
+            label="Background image URL"
+            [serverErrors]="serverErrorsFor('background_image')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field wide">
+          <label for="game-description">Description</label>
+          <textarea id="game-description" formControlName="description_raw" rows="8"></textarea>
+          <app-admin-form-errors
+            [control]="field('description_raw')"
+            label="Description"
+            [serverErrors]="serverErrorsFor('description_raw')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-website">Website</label>
+          <input id="game-website" formControlName="website" type="url" />
+          <app-admin-form-errors
+            [control]="field('website')"
+            label="Website"
+            [serverErrors]="serverErrorsFor('website')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-released">Release date</label>
+          <input id="game-released" formControlName="released" type="date" />
+          <app-admin-form-errors
+            [control]="field('released')"
+            label="Release date"
+            [serverErrors]="serverErrorsFor('released')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-rating">Rating (0–5) *</label>
+          <input
+            id="game-rating"
+            formControlName="rating"
+            type="number"
+            min="0"
+            max="5"
+            step="0.1"
+          />
+          <app-admin-form-errors
+            [control]="field('rating')"
+            label="Rating"
+            [serverErrors]="serverErrorsFor('rating')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-metacritic">Metacritic (0–100)</label>
+          <input
+            id="game-metacritic"
+            formControlName="metacritic"
+            type="number"
+            min="0"
+            max="100"
+          />
+          <app-admin-form-errors
+            [control]="field('metacritic')"
+            label="Metacritic"
+            [serverErrors]="serverErrorsFor('metacritic')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-playtime">Average playtime (hours) *</label>
+          <input id="game-playtime" formControlName="playtime" type="number" min="0" max="10000" />
+          <app-admin-form-errors
+            [control]="field('playtime')"
+            label="Playtime"
+            [serverErrors]="serverErrorsFor('playtime')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-genres">Genres *</label>
+          <select id="game-genres" formControlName="genre_ids" multiple>
+            <option *ngFor="let genre of genres" [ngValue]="genre.id">{{ genre.name }}</option>
+          </select>
+          <small>Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+          <app-admin-form-errors
+            [control]="field('genre_ids')"
+            label="At least one genre"
+            [serverErrors]="serverErrorsFor('genre_ids')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-platforms">Platforms *</label>
+          <select id="game-platforms" formControlName="platform_ids" multiple>
+            <option *ngFor="let platform of platforms" [ngValue]="platform.id">
+              {{ platform.name }}
+            </option>
+          </select>
+          <small>Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+          <app-admin-form-errors
+            [control]="field('platform_ids')"
+            label="At least one platform"
+            [serverErrors]="serverErrorsFor('platform_ids')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-developers">Developers</label>
+          <textarea id="game-developers" formControlName="developers"></textarea>
+          <small>One developer per line.</small>
+          <app-admin-form-errors
+            [serverErrors]="serverErrorsFor('developers')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-publishers">Publishers</label>
+          <textarea id="game-publishers" formControlName="publishers"></textarea>
+          <small>One publisher per line.</small>
+          <app-admin-form-errors
+            [serverErrors]="serverErrorsFor('publishers')"
+          ></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-tags">Tags</label>
+          <textarea id="game-tags" formControlName="tags"></textarea>
+          <small>One tag per line.</small>
+          <app-admin-form-errors [serverErrors]="serverErrorsFor('tags')"></app-admin-form-errors>
+        </div>
+
+        <div class="admin-field">
+          <label for="game-screenshots">Screenshot URLs</label>
+          <textarea id="game-screenshots" formControlName="screenshots"></textarea>
+          <small>Add one image URL per line.</small>
+          <app-admin-form-errors
+            [serverErrors]="serverErrorsFor('screenshots')"
+          ></app-admin-form-errors>
+        </div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button class="admin-button primary" type="submit" [disabled]="isSaving">
+          {{ isSaving ? 'Saving...' : isEditMode ? 'Save changes' : 'Create game' }}
+        </button>
+        <a class="admin-button secondary" routerLink="/admin/games">Cancel</a>
+      </div>
+    </form>
+  </section>
+</section>

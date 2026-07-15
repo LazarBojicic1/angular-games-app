@@ -20,7 +20,7 @@
 
   <app-error-message
     *ngIf="hasError"
-    title="Catalog request failed"
+    title="We couldn't load the catalog"
     [message]="errorMessage"
     (retry)="retry()"
   ></app-error-message>

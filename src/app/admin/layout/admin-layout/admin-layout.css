@@ -1,0 +1,117 @@
+.admin-shell {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  width: min(1480px, calc(100% - 2rem));
+  min-height: 680px;
+  margin: 2rem auto 4rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(8, 11, 16, 0.58);
+  box-shadow: var(--shadow);
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border-right: 1px solid var(--border);
+  background: rgba(15, 20, 28, 0.94);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-brand > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #101318;
+  font-weight: 900;
+}
+
+.admin-brand div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.admin-brand strong {
+  color: var(--text);
+}
+
+.admin-brand small {
+  color: var(--muted);
+}
+
+nav {
+  display: grid;
+  gap: 0.4rem;
+}
+
+nav a,
+.return-link {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.8rem;
+  color: var(--muted-light);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+nav a:hover,
+nav a.active {
+  border-color: rgba(216, 165, 54, 0.28);
+  background: rgba(216, 165, 54, 0.09);
+  color: var(--primary-light);
+}
+
+.return-link {
+  margin-top: auto;
+  border-color: var(--border);
+  text-align: center;
+}
+
+.admin-content {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+@media (max-width: 860px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .admin-sidebar nav {
+    grid-template-columns: repeat(6, minmax(max-content, 1fr));
+    overflow-x: auto;
+  }
+
+  .return-link {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-shell {
+    width: min(100% - 1rem, 1480px);
+    margin-top: 1rem;
+  }
+
+  .admin-content {
+    padding: 0.75rem;
+  }
+}

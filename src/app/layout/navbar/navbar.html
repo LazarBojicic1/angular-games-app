@@ -35,17 +35,31 @@
         Platforms
       </a>
 
-      <a routerLink="/favorites" routerLinkActive="active" (click)="closeMenu()">
-        Favorites
-      </a>
-
-      <a routerLink="/play-later" routerLinkActive="active" (click)="closeMenu()">
-        Play later
-      </a>
-
       <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">
         About
       </a>
+
+      <ng-container *ngIf="currentUser$ | async as user; else guestLinks">
+        <a routerLink="/favorites" routerLinkActive="active" (click)="closeMenu()">
+          Favorites
+        </a>
+
+        <a routerLink="/play-later" routerLinkActive="active" (click)="closeMenu()">
+          Play later
+        </a>
+
+        <a *ngIf="isAdmin(user)" routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">
+          Admin
+        </a>
+
+        <span class="user-label" [title]="user.email">{{ user.name }}</span>
+        <button class="nav-button" type="button" (click)="logout()">Log out</button>
+      </ng-container>
+
+      <ng-template #guestLinks>
+        <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Log in</a>
+        <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()">Register</a>
+      </ng-template>
     </div>
   </nav>
 </header>

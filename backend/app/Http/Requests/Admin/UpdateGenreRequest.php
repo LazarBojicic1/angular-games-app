@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateGenreRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'rawg_id' => ['nullable', 'integer', 'min:1', Rule::unique('genres', 'rawg_id')->ignore($this->route('genre'))],
+            'name' => ['sometimes', 'required', 'string', 'max:120'],
+            'slug' => ['sometimes', 'required', 'alpha_dash:ascii', 'max:120', Rule::unique('genres', 'slug')->ignore($this->route('genre'))],
+            'rawg_games_count' => ['nullable', 'integer', 'min:0'],
+            'image_background' => ['nullable', 'string', 'max:2048'],
+        ];
+    }
+}

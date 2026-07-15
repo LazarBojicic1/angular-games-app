@@ -1,59 +1,167 @@
-# GameVault
+# GameVault — Angular + Laravel ispitni projekat
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+GameVault je client-server aplikacija za pregled i upravljanje katalogom video-igara. Angular klijent više ne poziva RAWG direktno i ne čuva korisničke podatke u `localStorage`; svi podaci prolaze kroz Laravel REST API i čuvaju se u MySQL bazi.
 
-## Development server
+## Tehnologije
 
-To start a local development server, run:
+- Angular 21 standalone komponente, strict TypeScript
+- Laravel 13 REST API
+- Laravel Sanctum Bearer autentikacija
+- MySQL 8
+- RAWG API import na serverskoj strani
 
-```bash
-ng serve
+## Funkcionalnosti
+
+- javni katalog igara sa pretragom, filterima, sortiranjem i paginacijom
+- detalji igre, žanrovi, platforme i screenshot galerija
+- registracija, prijava i odjava
+- uloge `admin` i `user`, Angular guardovi i Laravel middleware
+- favorite i play-later lista vezane za prijavljenog korisnika i sačuvane u bazi
+- admin dashboard
+- kompletan CRUD za igre, žanrove, platforme, korisnike i uloge
+- reactive forme sa client validacijom i prikazom Laravel `422` grešaka
+- template-driven forma za pretragu
+- ugrađeni i prilagođeni Angular pipe-ovi
+- loading, empty, success, 403, 404 i API error stanja
+- idempotentna Artisan komanda za uvoz malog broja RAWG igara
+
+## Struktura
+
+```text
+game-vault/
+├── src/                 Angular aplikacija
+│   └── app/
+│       ├── admin/       admin layout, stranice, forme i servis
+│       ├── core/        auth, HTTP servisi, guardovi i interceptor
+│       ├── models/      TypeScript interfejsi
+│       ├── pages/       javne, auth i status stranice
+│       └── shared/      ponovljive komponente i pipe-ovi
+└── backend/             Laravel API
+    ├── app/             modeli, kontroleri, resources, requests, middleware
+    ├── database/        migracije, factories i seeder-i
+    └── routes/api.php   REST rute
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Pokretanje backenda
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Potrebni su PHP 8.3+, Composer i pokrenut MySQL server.
 
 ```bash
-ng generate component component-name
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+U `backend/.env` postaviti:
+
+```dotenv
+APP_URL=http://127.0.0.1:8000
+FRONTEND_URL=http://localhost:4200,http://127.0.0.1:4200
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=game_vault
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
+
+RAWG_API_URL=https://api.rawg.io/api
+RAWG_API_KEY=vas_rawg_kljuc
+SANCTUM_TOKEN_EXPIRATION=480
+```
+
+Kreiranje baze, migracije i deterministički demo podaci:
 
 ```bash
-ng generate --help
+mysql --protocol=TCP -h127.0.0.1 -uroot -p \
+  -e "CREATE DATABASE IF NOT EXISTS game_vault CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+php artisan migrate:fresh --seed
 ```
 
-## Building
-
-To build the project run:
+Opcioni mali uvoz aktuelnih podataka sa RAWG-a:
 
 ```bash
-ng build
+php artisan games:import --pages=1 --page-size=12
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Komanda radi `updateOrCreate` po `rawg_id`, pa ponovno pokretanje ne pravi duplikate. API server se pokreće ovako:
 
 ```bash
-ng test
+php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-## Running end-to-end tests
+## Pokretanje Angular aplikacije
 
-For end-to-end (e2e) testing, run:
+U drugom terminalu, iz korena projekta:
 
 ```bash
-ng e2e
+npm ci
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Aplikacija je dostupna na `http://localhost:4200`, a API na `http://127.0.0.1:8000/api`.
 
-## Additional Resources
+## Demo nalozi
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Uloga | Email | Lozinka |
+|---|---|---|
+| Admin | `admin@gamevault.test` | `admin12345` |
+| User | `user@gamevault.test` | `user12345` |
+
+Registracija preko aplikacije uvek kreira običnog korisnika. Samo admin može menjati uloge.
+Auth endpointi su rate-limitovani, a Sanctum token podrazumevano važi 480 minuta.
+
+## Glavne API rute
+
+Javne:
+
+- `GET /api/games`
+- `GET /api/games/{id}`
+- `GET /api/games/{id}/screenshots`
+- `GET /api/genres`
+- `GET /api/platforms`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+Prijavljen korisnik:
+
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
+- `GET /api/library/{favorites|play-later}`
+- `PUT /api/library/{favorites|play-later}/{game}`
+- `DELETE /api/library/{favorites|play-later}/{game}`
+
+Admin:
+
+- `/api/admin/dashboard`
+- CRUD `/api/admin/games`
+- CRUD `/api/admin/genres`
+- CRUD `/api/admin/platforms`
+- CRUD `/api/admin/users`
+- CRUD `/api/admin/roles`
+
+Laravel ponavlja autorizaciju na serveru; Angular `adminGuard` je samo UX zaštita, ne bezbednosna granica.
+
+## Provera production build-a
+
+```bash
+npm run build
+
+rg "localStorage|rawgApiKey|rawgApiUrl" src
+```
+
+Poslednja komanda treba da vrati nula pogodaka. RAWG ključ pripada samo lokalnom `backend/.env` fajlu, koji je ignorisan u Git-u. Pošto je ključ ranije bio deo Angular izvornog koda, preporučuje se njegovo rotiranje pre objavljivanja projekta.
+
+## Pokrivenost ispitnih zahteva
+
+- Dizajn: responzivan javni i admin interfejs
+- Komponente: svaka veća funkcionalnost ima zasebnu standalone komponentu
+- Forme: template-driven i reactive forme, validatori i obrada `422` grešaka
+- Data binding: interpolation, property, event, class, style, attribute i two-way binding
+- Pipes: `number`, `slice` i prilagođeni pipe-ovi za datum izlaska i vreme igranja
+- Rutiranje: parametarske, lazy auth/admin, zaštićene, 403 i 404 rute
+- Servisi: katalog, biblioteka, autentikacija i admin CRUD
+- Interfejsi: tipizirani API, auth, user, role, game i admin DTO modeli
+- CRUD: Laravel/MySQL operacije sa autentikacijom, autorizacijom i server validacijom

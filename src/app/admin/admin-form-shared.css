@@ -1,0 +1,84 @@
+.admin-form {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.35rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-field {
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+}
+
+.admin-field.wide {
+  grid-column: 1 / -1;
+}
+
+.admin-field label,
+.admin-field > span {
+  color: var(--muted-light);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-field small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.72rem 0.8rem;
+  outline: 0;
+  background: rgba(8, 11, 16, 0.72);
+  color: var(--text);
+}
+
+.admin-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-field select[multiple] {
+  min-height: 150px;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-field select:focus {
+  border-color: rgba(216, 165, 54, 0.7);
+  box-shadow: 0 0 0 3px rgba(216, 165, 54, 0.1);
+}
+
+.admin-field input.ng-invalid.ng-touched,
+.admin-field textarea.ng-invalid.ng-touched,
+.admin-field select.ng-invalid.ng-touched {
+  border-color: rgba(239, 100, 97, 0.7);
+}
+
+.admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding-top: 0.25rem;
+}
+
+@media (max-width: 760px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-field.wide {
+    grid-column: auto;
+  }
+}

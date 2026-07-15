@@ -1,0 +1,23 @@
+.crud-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.8fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.admin-toolbar > span {
+  color: var(--muted-light);
+  white-space: nowrap;
+}
+
+.password-error {
+  margin: 0;
+  color: #ff9c99;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1120px) {
+  .crud-layout {
+    grid-template-columns: 1fr;
+  }
+}

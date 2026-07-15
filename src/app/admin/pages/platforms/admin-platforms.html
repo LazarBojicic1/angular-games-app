@@ -1,0 +1,143 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Catalog settings</p>
+      <h1>Platforms</h1>
+      <p>Manage the platforms available throughout the catalog.</p>
+    </div>
+  </header>
+
+  <form class="admin-toolbar" (ngSubmit)="search()">
+    <div class="admin-search">
+      <input [formControl]="searchControl" type="search" maxlength="100" placeholder="Search platforms" />
+      <button class="admin-button secondary" type="submit">Search</button>
+      <button class="admin-button secondary" type="button" (click)="clearSearch()">Clear</button>
+    </div>
+    <span>{{ count | number }} platforms</span>
+  </form>
+
+  <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="crud-layout">
+    <section class="admin-panel">
+      <div class="admin-loading" *ngIf="isLoading">Loading platforms...</div>
+      <div class="admin-table-wrap" *ngIf="!isLoading && platforms.length">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Games</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let platform of platforms">
+              <td>
+                <span class="admin-record-title">{{ platform.name }}</span>
+                <span class="admin-record-subtitle">{{ platform.slug }}</span>
+              </td>
+              <td>{{ platform.games_count | number }}</td>
+              <td>
+                <div class="admin-row-actions">
+                  <button class="admin-icon-button" type="button" (click)="editPlatform(platform)">
+                    Edit
+                  </button>
+                  <button
+                    class="admin-icon-button danger"
+                    type="button"
+                    [disabled]="deletingId === platform.id"
+                    (click)="deletePlatform(platform)"
+                  >
+                    {{ deletingId === platform.id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-empty" *ngIf="!isLoading && !platforms.length && !errorMessage">
+        No platforms found.
+      </div>
+      <footer class="admin-pagination" *ngIf="!isLoading && (platforms.length || page > 1)">
+        <span>Page {{ page }}</span>
+        <div>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!previousPageUrl"
+            (click)="previousPage()"
+          >
+            Previous
+          </button>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!nextPageUrl"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="admin-form-panel">
+      <div class="admin-form-heading">
+        <h2>{{ isEditing ? 'Edit platform' : 'Create platform' }}</h2>
+        <button class="admin-icon-button" *ngIf="isEditing" type="button" (click)="cancelEdit()">
+          New platform
+        </button>
+      </div>
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="admin-field">
+          <label for="platform-name">Name *</label>
+          <input
+            id="platform-name"
+            formControlName="name"
+            type="text"
+            maxlength="100"
+            (blur)="fillSlug()"
+          />
+          <app-admin-form-errors
+            [control]="field('name')"
+            label="Name"
+            [serverErrors]="serverErrorsFor('name')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="platform-slug">URL slug *</label>
+          <input id="platform-slug" formControlName="slug" type="text" maxlength="120" />
+          <app-admin-form-errors
+            [control]="field('slug')"
+            label="URL slug"
+            [serverErrors]="serverErrorsFor('slug')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="platform-image">Background image URL</label>
+          <input id="platform-image" formControlName="image_background" type="url" />
+          <app-admin-form-errors
+            [control]="field('image_background')"
+            label="Background image URL"
+            [serverErrors]="serverErrorsFor('image_background')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-form-actions">
+          <button class="admin-button primary" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : isEditing ? 'Save changes' : 'Create platform' }}
+          </button>
+          <button
+            class="admin-button secondary"
+            *ngIf="isEditing"
+            type="button"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

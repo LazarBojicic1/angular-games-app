@@ -27,6 +27,7 @@ export class GenreGames implements OnInit {
 
   private readonly pageSize = 12;
   private page = 1;
+  private loadRequestId = 0;
   genreId: number | null = null;
   private filters: GameFilterValues = {
     genreId: '',
@@ -76,7 +77,14 @@ export class GenreGames implements OnInit {
   private resolveGenreName(id: number): void {
     this.gameService.getGenres().subscribe({
       next: (response) => {
-        this.genreName = response.results.find((genre) => genre.id === id)?.name || this.genreName;
+        if (this.genreId === id) {
+          this.genreName = response.results.find((genre) => genre.id === id)?.name || this.genreName;
+        }
+      },
+      error: () => {
+        if (this.genreId === id) {
+          this.genreName = 'Selected genre';
+        }
       }
     });
   }
@@ -97,6 +105,8 @@ export class GenreGames implements OnInit {
       return;
     }
 
+    const requestId = ++this.loadRequestId;
+
     if (reset) {
       this.page = 1;
       this.games = [];
@@ -116,16 +126,28 @@ export class GenreGames implements OnInit {
       this.pageSize
     ).subscribe({
       next: (response) => {
+        if (requestId !== this.loadRequestId) {
+          return;
+        }
+
         this.games = reset ? response.results : [...this.games, ...response.results];
         this.nextPageUrl = response.next;
         this.page += 1;
       },
       error: () => {
+        if (requestId !== this.loadRequestId) {
+          return;
+        }
+
         this.hasError = true;
         this.isLoading = false;
         this.isLoadingMore = false;
       },
       complete: () => {
+        if (requestId !== this.loadRequestId) {
+          return;
+        }
+
         this.isLoading = false;
         this.isLoadingMore = false;
       }

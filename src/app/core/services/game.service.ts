@@ -12,14 +12,12 @@ import { Platform } from '../../models/platform.model';
   providedIn: 'root'
 })
 export class GameService {
-  private readonly apiUrl = environment.rawgApiUrl;
-  private readonly apiKey = environment.rawgApiKey;
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   getGames(page: number = 1, pageSize: number = 12): Observable<ApiResponse<Game>> {
     const params = new HttpParams()
-      .set('key', this.apiKey)
       .set('page', page)
       .set('page_size', pageSize)
       .set('ordering', '-rating');
@@ -29,7 +27,6 @@ export class GameService {
 
   searchGames(searchText: string, page: number = 1, pageSize: number = 12): Observable<ApiResponse<Game>> {
     const params = new HttpParams()
-      .set('key', this.apiKey)
       .set('search', searchText)
       .set('page', page)
       .set('page_size', pageSize);
@@ -46,7 +43,6 @@ export class GameService {
     pageSize: number = 12
   ): Observable<ApiResponse<Game>> {
     let params = new HttpParams()
-      .set('key', this.apiKey)
       .set('page', page)
       .set('page_size', pageSize);
 
@@ -70,29 +66,19 @@ export class GameService {
   }
 
   getGameById(id: number): Observable<GameDetails> {
-    const params = new HttpParams()
-      .set('key', this.apiKey);
-
-    return this.http.get<GameDetails>(`${this.apiUrl}/games/${id}`, { params });
+    return this.http.get<GameDetails>(`${this.apiUrl}/games/${id}`);
   }
 
   getGameScreenshots(id: number): Observable<ApiResponse<Screenshot>> {
-    const params = new HttpParams()
-      .set('key', this.apiKey);
-
-    return this.http.get<ApiResponse<Screenshot>>(`${this.apiUrl}/games/${id}/screenshots`, { params });
+    return this.http.get<ApiResponse<Screenshot>>(`${this.apiUrl}/games/${id}/screenshots`);
   }
 
   getGenres(): Observable<ApiResponse<Genre>> {
-    const params = new HttpParams()
-      .set('key', this.apiKey);
-
-    return this.http.get<ApiResponse<Genre>>(`${this.apiUrl}/genres`, { params });
+    return this.http.get<ApiResponse<Genre>>(`${this.apiUrl}/genres`);
   }
 
   getGamesByGenre(genreId: number, page: number = 1, pageSize: number = 12): Observable<ApiResponse<Game>> {
     const params = new HttpParams()
-      .set('key', this.apiKey)
       .set('genres', genreId)
       .set('page', page)
       .set('page_size', pageSize);
@@ -102,7 +88,6 @@ export class GameService {
 
   getPlatforms(): Observable<ApiResponse<Platform>> {
     const params = new HttpParams()
-      .set('key', this.apiKey)
       .set('page_size', 20);
 
     return this.http.get<ApiResponse<Platform>>(`${this.apiUrl}/platforms`, { params });
@@ -110,7 +95,6 @@ export class GameService {
 
   getGamesByPlatform(platformId: number, page: number = 1, pageSize: number = 12): Observable<ApiResponse<Game>> {
     const params = new HttpParams()
-      .set('key', this.apiKey)
       .set('platforms', platformId)
       .set('page', page)
       .set('page_size', pageSize);

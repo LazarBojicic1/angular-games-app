@@ -1,0 +1,143 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Catalog settings</p>
+      <h1>Genres</h1>
+      <p>Manage the genres used to organize and discover games.</p>
+    </div>
+  </header>
+
+  <form class="admin-toolbar" (ngSubmit)="search()">
+    <div class="admin-search">
+      <input [formControl]="searchControl" type="search" maxlength="100" placeholder="Search genres" />
+      <button class="admin-button secondary" type="submit">Search</button>
+      <button class="admin-button secondary" type="button" (click)="clearSearch()">Clear</button>
+    </div>
+    <span>{{ count | number }} genres</span>
+  </form>
+
+  <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="crud-layout">
+    <section class="admin-panel">
+      <div class="admin-loading" *ngIf="isLoading">Loading genres...</div>
+      <div class="admin-table-wrap" *ngIf="!isLoading && genres.length">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Genre</th>
+              <th>Games</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let genre of genres">
+              <td>
+                <span class="admin-record-title">{{ genre.name }}</span>
+                <span class="admin-record-subtitle">{{ genre.slug }}</span>
+              </td>
+              <td>{{ genre.games_count | number }}</td>
+              <td>
+                <div class="admin-row-actions">
+                  <button class="admin-icon-button" type="button" (click)="editGenre(genre)">
+                    Edit
+                  </button>
+                  <button
+                    class="admin-icon-button danger"
+                    type="button"
+                    [disabled]="deletingId === genre.id"
+                    (click)="deleteGenre(genre)"
+                  >
+                    {{ deletingId === genre.id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-empty" *ngIf="!isLoading && !genres.length && !errorMessage">
+        No genres found.
+      </div>
+      <footer class="admin-pagination" *ngIf="!isLoading && (genres.length || page > 1)">
+        <span>Page {{ page }}</span>
+        <div>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!previousPageUrl"
+            (click)="previousPage()"
+          >
+            Previous
+          </button>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!nextPageUrl"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="admin-form-panel">
+      <div class="admin-form-heading">
+        <h2>{{ isEditing ? 'Edit genre' : 'Create genre' }}</h2>
+        <button class="admin-icon-button" *ngIf="isEditing" type="button" (click)="cancelEdit()">
+          New genre
+        </button>
+      </div>
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="admin-field">
+          <label for="genre-name">Name *</label>
+          <input
+            id="genre-name"
+            formControlName="name"
+            type="text"
+            maxlength="100"
+            (blur)="fillSlug()"
+          />
+          <app-admin-form-errors
+            [control]="field('name')"
+            label="Name"
+            [serverErrors]="serverErrorsFor('name')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="genre-slug">URL slug *</label>
+          <input id="genre-slug" formControlName="slug" type="text" maxlength="120" />
+          <app-admin-form-errors
+            [control]="field('slug')"
+            label="URL slug"
+            [serverErrors]="serverErrorsFor('slug')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="genre-image">Background image URL</label>
+          <input id="genre-image" formControlName="image_background" type="url" />
+          <app-admin-form-errors
+            [control]="field('image_background')"
+            label="Background image URL"
+            [serverErrors]="serverErrorsFor('image_background')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-form-actions">
+          <button class="admin-button primary" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : isEditing ? 'Save changes' : 'Create genre' }}
+          </button>
+          <button
+            class="admin-button secondary"
+            *ngIf="isEditing"
+            type="button"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

@@ -1,0 +1,28 @@
+<section class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span>GV</span>
+      <div>
+        <strong>GameVault Admin</strong>
+        <small>Content management</small>
+      </div>
+    </div>
+
+    <nav aria-label="Admin navigation">
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Dashboard
+      </a>
+      <a routerLink="/admin/games" routerLinkActive="active">Games</a>
+      <a routerLink="/admin/genres" routerLinkActive="active">Genres</a>
+      <a routerLink="/admin/platforms" routerLinkActive="active">Platforms</a>
+      <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+      <a routerLink="/admin/roles" routerLinkActive="active">Roles</a>
+    </nav>
+
+    <a class="return-link" routerLink="/games">Back to GameVault</a>
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</section>

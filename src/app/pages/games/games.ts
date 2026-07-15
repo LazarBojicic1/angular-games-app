@@ -31,6 +31,7 @@ export class Games implements OnInit {
 
   private readonly pageSize = 12;
   private page = 1;
+  private loadRequestId = 0;
   private searchText = '';
   private filters: GameFilterValues = {
     genreId: '',
@@ -88,6 +89,8 @@ export class Games implements OnInit {
   }
 
   private loadGames(reset: boolean): void {
+    const requestId = ++this.loadRequestId;
+
     if (reset) {
       this.page = 1;
       this.games = [];
@@ -109,17 +112,29 @@ export class Games implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          if (requestId !== this.loadRequestId) {
+            return;
+          }
+
           this.games = reset ? response.results : [...this.games, ...response.results];
           this.nextPageUrl = response.next;
           this.page += 1;
         },
         error: () => {
+          if (requestId !== this.loadRequestId) {
+            return;
+          }
+
           this.hasError = true;
           this.errorMessage = 'Game catalog is temporarily unavailable. Please try again in a moment.';
           this.isLoading = false;
           this.isLoadingMore = false;
         },
         complete: () => {
+          if (requestId !== this.loadRequestId) {
+            return;
+          }
+
           this.isLoading = false;
           this.isLoadingMore = false;
         }

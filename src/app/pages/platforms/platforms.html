@@ -2,13 +2,13 @@
   <header class="page-header">
     <p>Platforms</p>
     <h1>Pick an ecosystem and browse its strongest catalog entries.</h1>
-    <span>Platform selection stays visible while the right side updates with games for the active platform.</span>
+    <span>Compare games available on each platform and narrow the list to match your preferences.</span>
   </header>
 
   <app-error-message
     *ngIf="hasError"
-    title="Platform request failed"
-    message="Platform data could not be loaded right now."
+    title="We couldn't load platforms"
+    message="Please try again in a moment."
     (retry)="retry()"
   ></app-error-message>
 

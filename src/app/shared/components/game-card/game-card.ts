@@ -1,57 +1,109 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
+import { AuthService } from '../../../core/services/auth.service';
 import { LibraryService } from '../../../core/services/library.service';
 import { Game } from '../../../models/game.model';
+import { ReleaseDatePipe } from '../../pipes/release-date.pipe';
 import { RatingBadge } from '../rating-badge/rating-badge';
 
 @Component({
   selector: 'app-game-card',
-  imports: [CommonModule, RouterLink, RatingBadge],
+  imports: [CommonModule, RouterLink, RatingBadge, ReleaseDatePipe],
   templateUrl: './game-card.html',
   styleUrl: './game-card.css'
 })
-export class GameCard implements OnChanges {
+export class GameCard {
   @Input({ required: true }) game!: Game;
   @Input() compact = false;
   @Output() libraryChange = new EventEmitter<void>();
 
-  isFavorite = false;
-  isPlayLater = false;
+  isUpdatingFavorite = false;
+  isUpdatingPlayLater = false;
+  actionError = '';
 
-  constructor(private libraryService: LibraryService) {}
+  constructor(
+    private readonly libraryService: LibraryService,
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['game'] && this.game) {
-      this.refreshLibraryState();
-    }
+  get isFavorite(): boolean {
+    return this.libraryService.isFavorite(this.game.id);
+  }
+
+  get isPlayLater(): boolean {
+    return this.libraryService.isInPlayLater(this.game.id);
   }
 
   toggleFavorite(): void {
-    if (this.isFavorite) {
-      this.libraryService.removeFromFavorites(this.game.id);
-    } else {
-      this.libraryService.addToFavorites(this.game);
+    if (!this.requireAuthentication()) {
+      return;
     }
 
-    this.refreshLibraryState();
-    this.libraryChange.emit();
+    if (this.isUpdatingFavorite) {
+      return;
+    }
+
+    this.isUpdatingFavorite = true;
+    this.actionError = '';
+    const request = this.isFavorite
+      ? this.libraryService.removeFromFavorites(this.game.id)
+      : this.libraryService.addToFavorites(this.game);
+
+    request.pipe(
+      finalize(() => {
+        this.isUpdatingFavorite = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.libraryChange.emit();
+      },
+      error: () => {
+        this.actionError = "We couldn't update your library. Please try again.";
+      }
+    });
   }
 
   togglePlayLater(): void {
-    if (this.isPlayLater) {
-      this.libraryService.removeFromPlayLater(this.game.id);
-    } else {
-      this.libraryService.addToPlayLater(this.game);
+    if (!this.requireAuthentication()) {
+      return;
     }
 
-    this.refreshLibraryState();
-    this.libraryChange.emit();
+    if (this.isUpdatingPlayLater) {
+      return;
+    }
+
+    this.isUpdatingPlayLater = true;
+    this.actionError = '';
+    const request = this.isPlayLater
+      ? this.libraryService.removeFromPlayLater(this.game.id)
+      : this.libraryService.addToPlayLater(this.game);
+
+    request.pipe(
+      finalize(() => {
+        this.isUpdatingPlayLater = false;
+      })
+    ).subscribe({
+      next: () => {
+        this.libraryChange.emit();
+      },
+      error: () => {
+        this.actionError = "We couldn't update your library. Please try again.";
+      }
+    });
   }
 
-  private refreshLibraryState(): void {
-    this.isFavorite = this.libraryService.isFavorite(this.game.id);
-    this.isPlayLater = this.libraryService.isInPlayLater(this.game.id);
+  private requireAuthentication(): boolean {
+    if (this.authService.isAuthenticated) {
+      return true;
+    }
+
+    void this.router.navigate(['/login'], {
+      queryParams: { returnUrl: this.router.url }
+    });
+    return false;
   }
 }

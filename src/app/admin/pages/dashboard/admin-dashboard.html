@@ -1,0 +1,56 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Admin workspace</p>
+      <h1>Dashboard</h1>
+      <p>Manage your catalog, members, and access settings from one place.</p>
+    </div>
+    <a class="admin-button primary" routerLink="/admin/games/new">Add game</a>
+  </header>
+
+  <div class="admin-alert error" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button class="retry-link" type="button" (click)="loadDashboard()">Try again</button>
+  </div>
+
+  <div class="admin-loading" *ngIf="isLoading">Loading dashboard...</div>
+
+  <section class="stats-grid" *ngIf="!isLoading && stats">
+    <a routerLink="/admin/games">
+      <span>Games</span>
+      <strong>{{ stats.games | number }}</strong>
+      <small>Manage game listings</small>
+    </a>
+    <a routerLink="/admin/genres">
+      <span>Genres</span>
+      <strong>{{ stats.genres | number }}</strong>
+      <small>Shape game discovery</small>
+    </a>
+    <a routerLink="/admin/platforms">
+      <span>Platforms</span>
+      <strong>{{ stats.platforms | number }}</strong>
+      <small>Keep platform details current</small>
+    </a>
+    <a routerLink="/admin/users">
+      <span>Users</span>
+      <strong>{{ stats.users | number }}</strong>
+      <small>Manage members and permissions</small>
+    </a>
+  </section>
+
+  <section class="admin-panel quick-panel" *ngIf="!isLoading && stats">
+    <div class="admin-panel-heading">
+      <div>
+        <h2>Quick actions</h2>
+        <p>Common administration tasks.</p>
+      </div>
+    </div>
+    <div class="quick-grid">
+      <a routerLink="/admin/games/new">Add a new game</a>
+      <a routerLink="/admin/genres">Create or edit genres</a>
+      <a routerLink="/admin/platforms">Create or edit platforms</a>
+      <a routerLink="/admin/users">Manage user roles</a>
+      <a routerLink="/admin/roles">Maintain role definitions</a>
+    </div>
+  </section>
+</section>

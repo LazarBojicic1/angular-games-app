@@ -1,0 +1,109 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Access management</p>
+      <h1>Roles</h1>
+      <p>Configure the roles used to manage permissions across GameVault.</p>
+    </div>
+  </header>
+
+  <div class="admin-toolbar">
+    <div class="admin-search">
+      <input [formControl]="searchControl" type="search" maxlength="100" placeholder="Search roles" />
+      <button class="admin-button secondary" type="button" (click)="searchControl.setValue('')">
+        Clear
+      </button>
+    </div>
+    <span>{{ filteredRoles.length | number }} roles</span>
+  </div>
+
+  <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="crud-layout">
+    <section class="admin-panel">
+      <div class="admin-loading" *ngIf="isLoading">Loading roles...</div>
+      <div class="admin-table-wrap" *ngIf="!isLoading && filteredRoles.length">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Assigned users</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let role of filteredRoles">
+              <td>
+                <span class="admin-record-title">{{ role.label }}</span>
+                <span class="admin-record-subtitle">{{ role.name }}</span>
+              </td>
+              <td>{{ role.users_count ?? '—' }}</td>
+              <td>
+                <div class="admin-row-actions">
+                  <button class="admin-icon-button" type="button" (click)="editRole(role)">
+                    Edit
+                  </button>
+                  <button
+                    class="admin-icon-button danger"
+                    type="button"
+                    [disabled]="deletingId === role.id || isProtected(role)"
+                    (click)="deleteRole(role)"
+                  >
+                    {{ deletingId === role.id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-empty" *ngIf="!isLoading && !filteredRoles.length && !errorMessage">
+        No roles found.
+      </div>
+    </section>
+
+    <section class="admin-form-panel">
+      <div class="admin-form-heading">
+        <h2>{{ isEditing ? 'Edit role' : 'Create role' }}</h2>
+        <button class="admin-icon-button" *ngIf="isEditing" type="button" (click)="cancelEdit()">
+          New role
+        </button>
+      </div>
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="admin-field">
+          <label for="role-name">Name *</label>
+          <input id="role-name" formControlName="name" type="text" maxlength="40" />
+          <small>Use lowercase letters, numbers, and underscores. Start with a letter.</small>
+          <app-admin-form-errors
+            [control]="field('name')"
+            label="Role name"
+            [serverErrors]="serverErrorsFor('name')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="role-label">Display label *</label>
+          <input id="role-label" formControlName="label" type="text" maxlength="80" />
+          <app-admin-form-errors
+            [control]="field('label')"
+            label="Display label"
+            [serverErrors]="serverErrorsFor('label')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-form-actions">
+          <button class="admin-button primary" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : isEditing ? 'Save changes' : 'Create role' }}
+          </button>
+          <button
+            class="admin-button secondary"
+            *ngIf="isEditing"
+            type="button"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

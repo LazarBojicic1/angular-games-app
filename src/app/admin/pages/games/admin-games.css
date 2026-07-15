@@ -1,0 +1,34 @@
+.game-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 220px;
+}
+
+.game-cell img,
+.cover-placeholder {
+  width: 58px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.cover-placeholder {
+  display: grid;
+  place-items: center;
+  background: rgba(216, 165, 54, 0.12);
+  color: var(--primary-light);
+  font-weight: 900;
+}
+
+.compact-copy {
+  max-width: 240px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.admin-toolbar > span {
+  color: var(--muted-light);
+  white-space: nowrap;
+}

@@ -1,0 +1,188 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Account management</p>
+      <h1>Users</h1>
+      <p>Manage member profiles and permissions.</p>
+    </div>
+  </header>
+
+  <form class="admin-toolbar" (ngSubmit)="search()">
+    <div class="admin-search">
+      <input
+        [formControl]="searchControl"
+        type="search"
+        maxlength="100"
+        placeholder="Search users by name or email"
+      />
+      <button class="admin-button secondary" type="submit">Search</button>
+      <button class="admin-button secondary" type="button" (click)="clearSearch()">Clear</button>
+    </div>
+    <span>{{ count | number }} users</span>
+  </form>
+
+  <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="crud-layout">
+    <section class="admin-panel">
+      <div class="admin-loading" *ngIf="isLoading">Loading users...</div>
+      <div class="admin-table-wrap" *ngIf="!isLoading && users.length">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>
+                <span class="admin-record-title">{{ user.name }}</span>
+                <span class="admin-record-subtitle">{{ user.email }}</span>
+              </td>
+              <td>
+                <span class="admin-status">{{ roleName(user) }}</span>
+              </td>
+              <td>{{ user.created_at ? (user.created_at | date: 'mediumDate') : '—' }}</td>
+              <td>
+                <div class="admin-row-actions">
+                  <button class="admin-icon-button" type="button" (click)="editUser(user)">
+                    Edit
+                  </button>
+                  <button
+                    class="admin-icon-button danger"
+                    type="button"
+                    [disabled]="deletingId === user.id"
+                    (click)="deleteUser(user)"
+                  >
+                    {{ deletingId === user.id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-empty" *ngIf="!isLoading && !users.length && !errorMessage">
+        No users found.
+      </div>
+      <footer class="admin-pagination" *ngIf="!isLoading && (users.length || page > 1)">
+        <span>Page {{ page }}</span>
+        <div>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!previousPageUrl"
+            (click)="previousPage()"
+          >
+            Previous
+          </button>
+          <button
+            class="admin-button secondary"
+            type="button"
+            [disabled]="!nextPageUrl"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="admin-form-panel">
+      <div class="admin-form-heading">
+        <h2>{{ isEditing ? 'Edit user' : 'Create user' }}</h2>
+        <button class="admin-icon-button" *ngIf="isEditing" type="button" (click)="cancelEdit()">
+          New user
+        </button>
+      </div>
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="admin-field">
+          <label for="user-name">Name *</label>
+          <input id="user-name" formControlName="name" type="text" autocomplete="name" />
+          <app-admin-form-errors
+            [control]="field('name')"
+            label="Name"
+            [serverErrors]="serverErrorsFor('name')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="user-email">Email *</label>
+          <input id="user-email" formControlName="email" type="email" autocomplete="email" />
+          <app-admin-form-errors
+            [control]="field('email')"
+            label="Email"
+            [serverErrors]="serverErrorsFor('email')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="user-role">Role *</label>
+          <select id="user-role" formControlName="role_id">
+            <option [ngValue]="null">Select role</option>
+            <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.label }}</option>
+          </select>
+          <app-admin-form-errors
+            [control]="field('role_id')"
+            label="Role"
+            [serverErrors]="serverErrorsFor('role_id')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="user-password"
+            >Password {{ isEditing ? '(leave blank to keep the current password)' : '*' }}</label
+          >
+          <input
+            id="user-password"
+            formControlName="password"
+            type="password"
+            autocomplete="new-password"
+          />
+          <small>Use at least eight characters, including a letter and a number.</small>
+          <app-admin-form-errors
+            [control]="field('password')"
+            label="Password"
+            [serverErrors]="serverErrorsFor('password')"
+          ></app-admin-form-errors>
+        </div>
+        <div class="admin-field">
+          <label for="user-password-confirmation">
+            {{ isEditing ? 'Confirm new password' : 'Confirm password *' }}
+          </label>
+          <input
+            id="user-password-confirmation"
+            formControlName="password_confirmation"
+            type="password"
+            autocomplete="new-password"
+          />
+          <app-admin-form-errors
+            [control]="field('password_confirmation')"
+            label="Password confirmation"
+            [serverErrors]="serverErrorsFor('password_confirmation')"
+          ></app-admin-form-errors>
+          <p
+            class="password-error"
+            *ngIf="form.hasError('passwordMismatch') && field('password_confirmation').touched"
+          >
+            Passwords do not match.
+          </p>
+        </div>
+        <div class="admin-form-actions">
+          <button class="admin-button primary" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : isEditing ? 'Save changes' : 'Create user' }}
+          </button>
+          <button
+            class="admin-button secondary"
+            *ngIf="isEditing"
+            type="button"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

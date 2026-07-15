@@ -186,6 +186,19 @@ h3 {
   color: #a7ead8;
 }
 
+.actions button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+  transform: none;
+}
+
+.action-error {
+  margin: -4px 0 0;
+  color: #ff9d9a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .compact {
   grid-template-rows: 170px 1fr;
 }

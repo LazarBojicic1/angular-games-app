@@ -1,5 +1,4 @@
 export const environment = {
   production: false,
-  rawgApiUrl: 'https://api.rawg.io/api',
-  rawgApiKey: 'd18abb9ebc09432593b8c5a7edcd4e0f'
+  apiUrl: 'http://127.0.0.1:8000/api'
 };

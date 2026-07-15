@@ -1,0 +1,105 @@
+<section class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">Game catalog</p>
+      <h1>Games</h1>
+      <p>Manage the games available across GameVault.</p>
+    </div>
+    <a class="admin-button primary" routerLink="/admin/games/new">Add game</a>
+  </header>
+
+  <form class="admin-toolbar" (ngSubmit)="search()">
+    <div class="admin-search">
+      <input [formControl]="searchControl" type="search" maxlength="100" placeholder="Search by name or slug" />
+      <button class="admin-button secondary" type="submit">Search</button>
+      <button class="admin-button secondary" type="button" (click)="clearSearch()">Clear</button>
+    </div>
+    <span>{{ count | number }} games</span>
+  </form>
+
+  <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <section class="admin-panel">
+    <div class="admin-loading" *ngIf="isLoading">Loading games...</div>
+
+    <div class="admin-table-wrap" *ngIf="!isLoading && games.length">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th>Released</th>
+            <th>Rating</th>
+            <th>Genres</th>
+            <th>Platforms</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let game of games">
+            <td>
+              <div class="game-cell">
+                <img
+                  *ngIf="game.background_image"
+                  [src]="game.background_image"
+                  [alt]="game.name"
+                />
+                <span class="cover-placeholder" *ngIf="!game.background_image">GV</span>
+                <div>
+                  <span class="admin-record-title">{{ game.name }}</span>
+                  <span class="admin-record-subtitle">{{ game.slug }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ game.released ? (game.released | date: 'mediumDate') : 'TBA' }}</td>
+            <td>{{ game.rating | number: '1.1-1' }}</td>
+            <td class="compact-copy">{{ genreNames(game) }}</td>
+            <td class="compact-copy">{{ platformNames(game) }}</td>
+            <td>
+              <div class="admin-row-actions">
+                <a class="admin-icon-button" [routerLink]="['/games', game.id]">View</a>
+                <a class="admin-icon-button" [routerLink]="['/admin/games', game.id, 'edit']"
+                  >Edit</a
+                >
+                <button
+                  class="admin-icon-button danger"
+                  type="button"
+                  [disabled]="deletingId === game.id"
+                  (click)="deleteGame(game)"
+                >
+                  {{ deletingId === game.id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admin-empty" *ngIf="!isLoading && !games.length && !errorMessage">
+      No games match the current search.
+    </div>
+
+    <footer class="admin-pagination" *ngIf="!isLoading && (games.length || page > 1)">
+      <span>Page {{ page }}</span>
+      <div>
+        <button
+          class="admin-button secondary"
+          type="button"
+          [disabled]="!previousPageUrl"
+          (click)="previousPage()"
+        >
+          Previous
+        </button>
+        <button
+          class="admin-button secondary"
+          type="button"
+          [disabled]="!nextPageUrl"
+          (click)="nextPage()"
+        >
+          Next
+        </button>
+      </div>
+    </footer>
+  </section>
+</section>

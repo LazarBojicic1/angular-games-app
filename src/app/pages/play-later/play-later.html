@@ -5,7 +5,16 @@
     <span>A focused queue for the games you want to return to when the timing is right.</span>
   </header>
 
-  <section *ngIf="playLaterGames.length; else emptyState">
+  <app-loading-spinner *ngIf="isLoading" label="Loading play-later queue"></app-loading-spinner>
+
+  <app-error-message
+    *ngIf="!isLoading && hasError"
+    title="We couldn't load your play-later list"
+    message="Please try again in a moment."
+    (retry)="refreshPlayLater()"
+  ></app-error-message>
+
+  <section *ngIf="!isLoading && !hasError && playLaterGames.length; else emptyState">
     <div class="content-meta">
       <span><strong>{{ playLaterGames.length }}</strong> queued games</span>
       <a class="secondary-action" routerLink="/games">Browse catalog</a>
@@ -21,7 +30,7 @@
   </section>
 
   <ng-template #emptyState>
-    <div class="empty-state">
+    <div class="empty-state" *ngIf="!isLoading && !hasError">
       <h2>Your queue is empty</h2>
       <p>Add games from the catalog when they look worth your next session.</p>
       <a class="primary-action" routerLink="/games">Browse games</a>

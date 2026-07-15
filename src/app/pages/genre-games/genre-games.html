@@ -2,7 +2,7 @@
   <header class="page-header">
     <p>Genre collection</p>
     <h1>{{ genreName }}</h1>
-    <span>Games filtered by the selected genre, loaded directly from the catalog API.</span>
+    <span>Browse games in this genre and refine the list to match your preferences.</span>
   </header>
 
   <a class="secondary-action back-link" routerLink="/genres">Back to genres</a>
@@ -20,8 +20,8 @@
 
   <app-error-message
     *ngIf="hasError"
-    title="Genre games request failed"
-    message="Games for this genre could not be loaded right now."
+    title="We couldn't load these games"
+    message="Please try again in a moment."
     (retry)="retry()"
   ></app-error-message>
 

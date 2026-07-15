@@ -1,5 +1,10 @@
 <app-navbar></app-navbar>
 
+<section class="app-alert" *ngIf="libraryService.error() as libraryError" role="alert">
+  <span>{{ libraryError }}</span>
+  <button type="button" (click)="retryLibrary()">Try again</button>
+</section>
+
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>

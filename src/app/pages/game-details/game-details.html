@@ -3,7 +3,7 @@
 
   <app-error-message
     *ngIf="!isLoading && hasError"
-    title="Details request failed"
+    title="We couldn't load this game"
     [message]="errorMessage"
     (retry)="retry()"
   ></app-error-message>
@@ -13,7 +13,7 @@
       <a class="secondary-action" routerLink="/games">Back to catalog</a>
 
       <div class="hero-content">
-        <p>{{ game.released || 'Release TBA' }}</p>
+        <p>{{ game.released | releaseDate }}</p>
         <h1>{{ game.name }}</h1>
 
         <div class="hero-metrics">
@@ -26,7 +26,7 @@
 
           <div>
             <span>Playtime</span>
-            <strong>{{ game.playtime || 0 }}h</strong>
+            <strong>{{ game.playtime | playtime }}</strong>
           </div>
         </div>
       </div>
@@ -64,12 +64,12 @@
 
             <div>
               <dt>Release date</dt>
-              <dd>{{ game.released || 'TBA' }}</dd>
+              <dd>{{ game.released | releaseDate }}</dd>
             </div>
 
             <div>
               <dt>Playtime</dt>
-              <dd>{{ game.playtime || 0 }} hours</dd>
+              <dd>{{ game.playtime | playtime: true }}</dd>
             </div>
           </dl>
         </section>
