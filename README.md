@@ -152,16 +152,4 @@ npm run build
 rg "localStorage|rawgApiKey|rawgApiUrl" src
 ```
 
-Poslednja komanda treba da vrati nula pogodaka. RAWG ključ pripada samo lokalnom `backend/.env` fajlu, koji je ignorisan u Git-u. Pošto je ključ ranije bio deo Angular izvornog koda, preporučuje se njegovo rotiranje pre objavljivanja projekta.
-
-## Pokrivenost ispitnih zahteva
-
-- Dizajn: responzivan javni i admin interfejs
-- Komponente: svaka veća funkcionalnost ima zasebnu standalone komponentu
-- Forme: template-driven i reactive forme, validatori i obrada `422` grešaka
-- Data binding: interpolation, property, event, class, style, attribute i two-way binding
-- Pipes: `number`, `slice` i prilagođeni pipe-ovi za datum izlaska i vreme igranja
-- Rutiranje: parametarske, lazy auth/admin, zaštićene, 403 i 404 rute
-- Servisi: katalog, biblioteka, autentikacija i admin CRUD
-- Interfejsi: tipizirani API, auth, user, role, game i admin DTO modeli
-- CRUD: Laravel/MySQL operacije sa autentikacijom, autorizacijom i server validacijom
+Poslednja komanda treba da vrati nula pogodaka. RAWG ključ pripada samo lokalnom `backend/.env` fajlu.
