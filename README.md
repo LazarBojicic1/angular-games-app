@@ -142,8 +142,6 @@ Admin:
 - CRUD `/api/admin/users`
 - CRUD `/api/admin/roles`
 
-Laravel ponavlja autorizaciju na serveru; Angular `adminGuard` je samo UX zaštita, ne bezbednosna granica.
-
 ## Provera production build-a
 
 ```bash
